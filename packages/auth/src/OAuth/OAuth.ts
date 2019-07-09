@@ -122,6 +122,12 @@ export default class OAuth {
 
     const code_verifier = oAuthStorage.getPKCE();
 
+    // throw early if this is the second event emitted
+    if (!code_verifier) {
+      console.log('[CUSTOM handleCodeFlow] code_verifier is null');
+      throw Error("You don't have a code verifier");
+    }
+  
     const oAuthTokenBody = {
       grant_type: 'authorization_code',
       code,
@@ -141,7 +147,7 @@ export default class OAuth {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: typeof URLSearchParams !== 'undefined' ? new URLSearchParams(body) : body
+        body
       }) as any).json();
 
       if (error) {
